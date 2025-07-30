@@ -14,6 +14,99 @@ export type Database = {
   }
   public: {
     Tables: {
+      ads: {
+        Row: {
+          ad_url: string | null
+          brand: string | null
+          category: string | null
+          comments: number | null
+          country: string | null
+          created_at: string | null
+          days_active: number | null
+          description: string | null
+          id: string
+          image_url: string | null
+          likes: number | null
+          platform: string
+          scraped_at: string | null
+          shares: number | null
+          title: string
+          updated_at: string | null
+          user_id: string
+          video_url: string | null
+        }
+        Insert: {
+          ad_url?: string | null
+          brand?: string | null
+          category?: string | null
+          comments?: number | null
+          country?: string | null
+          created_at?: string | null
+          days_active?: number | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          likes?: number | null
+          platform: string
+          scraped_at?: string | null
+          shares?: number | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+          video_url?: string | null
+        }
+        Update: {
+          ad_url?: string | null
+          brand?: string | null
+          category?: string | null
+          comments?: number | null
+          country?: string | null
+          created_at?: string | null
+          days_active?: number | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          likes?: number | null
+          platform?: string
+          scraped_at?: string | null
+          shares?: number | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+          video_url?: string | null
+        }
+        Relationships: []
+      }
+      api_keys: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          key_name: string
+          key_value: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          key_name: string
+          key_value: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          key_name?: string
+          key_value?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       faqs: {
         Row: {
           answer: string
@@ -101,6 +194,54 @@ export type Database = {
           full_name?: string | null
           id?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      trending_products: {
+        Row: {
+          analysis_date: string | null
+          avg_engagement: string
+          category: string
+          created_at: string | null
+          id: string
+          name: string
+          platforms: string[]
+          rank: number
+          reason: string
+          score: number
+          trend: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          analysis_date?: string | null
+          avg_engagement: string
+          category: string
+          created_at?: string | null
+          id?: string
+          name: string
+          platforms: string[]
+          rank: number
+          reason: string
+          score: number
+          trend: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          analysis_date?: string | null
+          avg_engagement?: string
+          category?: string
+          created_at?: string | null
+          id?: string
+          name?: string
+          platforms?: string[]
+          rank?: number
+          reason?: string
+          score?: number
+          trend?: string
+          updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }
