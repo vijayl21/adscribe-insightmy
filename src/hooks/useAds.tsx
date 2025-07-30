@@ -49,13 +49,28 @@ export const useCreateAd = () => {
   const { toast } = useToast();
   
   return useMutation({
-    mutationFn: async (adData: Partial<Ad>) => {
+    mutationFn: async (adData: Omit<Ad, 'id' | 'created_at' | 'updated_at' | 'scraped_at'> & { user_id?: string }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
       
       const { data, error } = await supabase
         .from('ads')
-        .insert([{ ...adData, user_id: user.id }])
+        .insert([{ 
+          title: adData.title,
+          description: adData.description,
+          platform: adData.platform,
+          image_url: adData.image_url,
+          video_url: adData.video_url,
+          likes: adData.likes || 0,
+          comments: adData.comments || 0,
+          shares: adData.shares || 0,
+          country: adData.country,
+          days_active: adData.days_active || 0,
+          brand: adData.brand,
+          category: adData.category,
+          ad_url: adData.ad_url,
+          user_id: user.id
+        }])
         .select()
         .single();
       

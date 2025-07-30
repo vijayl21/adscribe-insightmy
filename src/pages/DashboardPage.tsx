@@ -5,7 +5,7 @@ import { StatsOverview } from '@/components/Dashboard/StatsOverview';
 import { TopProducts } from '@/components/Dashboard/TopProducts';
 import { FilterBar } from '@/components/Dashboard/FilterBar';
 import { AdCard } from '@/components/Dashboard/AdCard';
-import { mockAds } from '@/data/mockData';
+import { useAds } from '@/hooks/useAds';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, BarChart3 } from 'lucide-react';
 
@@ -16,9 +16,11 @@ interface DashboardPageProps {
 export const DashboardPage = ({ onLogout }: DashboardPageProps) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [currentView, setCurrentView] = useState<'products' | 'ads'>('products');
+  const { data: ads, isLoading: adsLoading, refetch: refetchAds } = useAds();
 
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     setIsRefreshing(true);
+    await refetchAds();
     setTimeout(() => setIsRefreshing(false), 2000);
   };
 
@@ -70,11 +72,25 @@ export const DashboardPage = ({ onLogout }: DashboardPageProps) => {
         ) : (
           <div className="space-y-6">
             <FilterBar />
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {mockAds.map((ad) => (
-                <AdCard key={ad.id} ad={ad} />
-              ))}
-            </div>
+            {adsLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="text-white text-lg">Loading ads...</div>
+              </div>
+            ) : ads && ads.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {ads.map((ad) => (
+                  <AdCard key={ad.id} ad={ad} />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-gray-400 mb-4">No ads found</p>
+                <Button onClick={handleRefresh} disabled={isRefreshing}>
+                  <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+                  Refresh Data
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </main>
