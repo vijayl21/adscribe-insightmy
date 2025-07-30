@@ -105,6 +105,7 @@ serve(async (req) => {
 
       if (insertError) {
         console.error('Error inserting ads:', insertError);
+        console.error('Insert error details:', JSON.stringify(insertError, null, 2));
         throw new Error('Failed to save scraped ads');
       }
 
@@ -170,6 +171,9 @@ serve(async (req) => {
         .select();
 
       if (fallbackError) {
+        console.error('Fallback insert error:', fallbackError);
+        console.error('Fallback error details:', JSON.stringify(fallbackError, null, 2));
+        console.error('Attempted to insert:', JSON.stringify(fallbackAds, null, 2));
         throw new Error('Failed to save fallback ads');
       }
 

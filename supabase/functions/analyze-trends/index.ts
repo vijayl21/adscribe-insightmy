@@ -111,9 +111,28 @@ Focus on realistic product names, categories, and trends based on the data provi
     // Parse AI response
     let trendingProducts;
     try {
-      trendingProducts = JSON.parse(trendingProductsText);
+      // Extract JSON from AI response, removing any markdown formatting
+      let jsonText = trendingProductsText.trim();
+      
+      // Remove markdown code block wrappers if present
+      if (jsonText.startsWith('```json')) {
+        jsonText = jsonText.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+      } else if (jsonText.startsWith('```')) {
+        jsonText = jsonText.replace(/^```\s*/, '').replace(/\s*```$/, '');
+      }
+      
+      // Find JSON array in the response
+      const jsonStart = jsonText.indexOf('[');
+      const jsonEnd = jsonText.lastIndexOf(']');
+      
+      if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
+        jsonText = jsonText.substring(jsonStart, jsonEnd + 1);
+      }
+      
+      trendingProducts = JSON.parse(jsonText);
     } catch (parseError) {
       console.error('Error parsing AI response:', parseError);
+      console.error('Raw AI response:', trendingProductsText);
       throw new Error('Invalid AI response format');
     }
 
