@@ -1,43 +1,53 @@
 
 import { Card } from '@/components/ui/card';
 import { TrendingUp, TrendingDown, Database, Target } from 'lucide-react';
-
-const stats = [
-  {
-    title: "Total Ads Analyzed",
-    value: "12,847",
-    change: "+2.3%",
-    trend: "up",
-    icon: Database,
-    color: "text-blue-400"
-  },
-  {
-    title: "Active Campaigns",
-    value: "1,245",
-    change: "+8.1%",
-    trend: "up",
-    icon: Target,
-    color: "text-green-400"
-  },
-  {
-    title: "Avg. Engagement",
-    value: "8.9K",
-    change: "-1.2%",
-    trend: "down",
-    icon: TrendingUp,
-    color: "text-purple-400"
-  },
-  {
-    title: "Trending Products",
-    value: "47",
-    change: "+12.5%",
-    trend: "up",
-    icon: TrendingUp,
-    color: "text-yellow-400"
-  }
-];
+import { useAds } from '@/hooks/useAds';
+import { useTrendingProducts } from '@/hooks/useTrendingProducts';
 
 export const StatsOverview = () => {
+  const { data: ads } = useAds();
+  const { data: products } = useTrendingProducts();
+
+  const totalAds = ads?.length || 0;
+  const totalEngagement = ads?.reduce((sum, ad) => sum + ad.likes + ad.comments + ad.shares, 0) || 0;
+  const avgEngagement = totalAds > 0 ? Math.round(totalEngagement / totalAds) : 0;
+  const trendingProducts = products?.length || 0;
+
+  const stats = [
+    {
+      title: "Total Ads Analyzed",
+      value: totalAds.toLocaleString(),
+      change: "+2.3%",
+      trend: "up" as const,
+      icon: Database,
+      color: "text-blue-400"
+    },
+    {
+      title: "Active Campaigns",
+      value: ads?.filter(ad => ad.days_active > 0).length.toLocaleString() || "0",
+      change: "+8.1%",
+      trend: "up" as const,
+      icon: Target,
+      color: "text-green-400"
+    },
+    {
+      title: "Avg. Engagement",
+      value: avgEngagement > 1000 ? `${(avgEngagement / 1000).toFixed(1)}K` : avgEngagement.toString(),
+      change: "-1.2%",
+      trend: "down" as const,
+      icon: TrendingUp,
+      color: "text-purple-400"
+    },
+    {
+      title: "Trending Products",
+      value: trendingProducts.toString(),
+      change: "+12.5%",
+      trend: "up" as const,
+      icon: TrendingUp,
+      color: "text-yellow-400"
+    }
+  ];
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       {stats.map((stat) => {

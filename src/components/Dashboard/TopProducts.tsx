@@ -1,62 +1,50 @@
 
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { TrendingUp, Star, Target } from 'lucide-react';
-
-const topProducts = [
-  {
-    id: 1,
-    name: "Smart Phone Ring Holder",
-    category: "Phone Accessories",
-    score: 94,
-    trend: "+23%",
-    reason: "High engagement across TikTok & Facebook. Viral unboxing videos showing convenience factor.",
-    platforms: ["TikTok", "Facebook", "Pinterest"],
-    avgEngagement: "12.5K"
-  },
-  {
-    id: 2,
-    name: "LED Strip Lights RGB",
-    category: "Home Decor",
-    score: 91,
-    trend: "+19%",
-    reason: "Seasonal trend spike. Room makeover content performing exceptionally well.",
-    platforms: ["TikTok", "Pinterest"],
-    avgEngagement: "8.9K"
-  },
-  {
-    id: 3,
-    name: "Wireless Ear Buds Pro",
-    category: "Electronics",
-    score: 88,
-    trend: "+15%",
-    reason: "Strong repetition across platforms. Multiple sellers using similar ad formats.",
-    platforms: ["Facebook", "Pinterest"],
-    avgEngagement: "15.2K"
-  },
-  {
-    id: 4,
-    name: "Posture Corrector Belt",
-    category: "Health & Fitness",
-    score: 85,
-    trend: "+12%",
-    reason: "Pain-point targeting ads with high conversion language. Before/after content.",
-    platforms: ["Facebook", "TikTok"],
-    avgEngagement: "6.8K"
-  },
-  {
-    id: 5,
-    name: "Car Dashboard Camera",
-    category: "Automotive",
-    score: 83,
-    trend: "+11%",
-    reason: "Safety-focused messaging resonating well. Insurance angle driving engagement.",
-    platforms: ["Facebook"],
-    avgEngagement: "4.7K"
-  }
-];
+import { Button } from '@/components/ui/button';
+import { TrendingUp, Star, Target, RefreshCw } from 'lucide-react';
+import { useTrendingProducts, useGenerateTrendingProducts } from '@/hooks/useTrendingProducts';
 
 export const TopProducts = () => {
+  const { data: products, isLoading, error } = useTrendingProducts();
+  const generateTrends = useGenerateTrendingProducts();
+
+  const handleRefreshTrends = () => {
+    generateTrends.mutate();
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-white text-lg">Loading trending products...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-red-400 mb-4">Error loading trending products</p>
+        <Button onClick={handleRefreshTrends} disabled={generateTrends.isPending}>
+          <RefreshCw className={`w-4 h-4 mr-2 ${generateTrends.isPending ? 'animate-spin' : ''}`} />
+          Retry
+        </Button>
+      </div>
+    );
+  }
+
+  if (!products || products.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-gray-400 mb-4">No trending products available</p>
+        <Button onClick={handleRefreshTrends} disabled={generateTrends.isPending}>
+          <RefreshCw className={`w-4 h-4 mr-2 ${generateTrends.isPending ? 'animate-spin' : ''}`} />
+          {generateTrends.isPending ? 'Generating...' : 'Generate Trends'}
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -65,22 +53,32 @@ export const TopProducts = () => {
             <TrendingUp className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-white">Top 10 Winning Products</h2>
-            <p className="text-gray-400">AI-analyzed trending products • Updated daily</p>
+            <h2 className="text-2xl font-bold text-white">Top Winning Products</h2>
+            <p className="text-gray-400">AI-analyzed trending products • Updated regularly</p>
           </div>
         </div>
-        <Badge className="bg-green-500/10 text-green-400 border-green-500/20">
-          Last updated: 2 hours ago
-        </Badge>
+        <div className="flex items-center space-x-3">
+          <Badge className="bg-green-500/10 text-green-400 border-green-500/20">
+            {products.length} products found
+          </Badge>
+          <Button 
+            onClick={handleRefreshTrends} 
+            disabled={generateTrends.isPending}
+            className="bg-gray-700 hover:bg-gray-600"
+          >
+            <RefreshCw className={`w-4 h-4 mr-2 ${generateTrends.isPending ? 'animate-spin' : ''}`} />
+            {generateTrends.isPending ? 'Analyzing...' : 'Refresh'}
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {topProducts.map((product, index) => (
+        {products.slice(0, 10).map((product, index) => (
           <Card key={product.id} className="bg-gray-800/50 border-gray-700 p-6 hover:bg-gray-800/70 transition-all duration-300">
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center space-x-3">
                 <div className="flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full text-white font-bold">
-                  #{index + 1}
+                  #{product.rank}
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-white">{product.name}</h3>
@@ -118,7 +116,7 @@ export const TopProducts = () => {
               </div>
               <div className="text-right">
                 <p className="text-xs text-gray-500">Avg. Engagement</p>
-                <p className="text-sm font-medium text-white">{product.avgEngagement}</p>
+                <p className="text-sm font-medium text-white">{product.avg_engagement}</p>
               </div>
             </div>
           </Card>

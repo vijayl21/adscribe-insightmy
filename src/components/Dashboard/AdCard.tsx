@@ -3,23 +3,10 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Heart, MessageCircle, Share, ExternalLink, Eye } from 'lucide-react';
+import { Ad } from '@/hooks/useAds';
 
 interface AdCardProps {
-  ad: {
-    id: string;
-    title: string;
-    description: string;
-    platform: string;
-    imageUrl?: string;
-    videoUrl?: string;
-    likes: number;
-    comments: number;
-    shares: number;
-    country: string;
-    daysActive: number;
-    brand: string;
-    category: string;
-  };
+  ad: Ad;
 }
 
 export const AdCard = ({ ad }: AdCardProps) => {
@@ -38,24 +25,30 @@ export const AdCard = ({ ad }: AdCardProps) => {
     }
   };
 
+  const handleExternalClick = () => {
+    if (ad.ad_url) {
+      window.open(ad.ad_url, '_blank');
+    }
+  };
+
   return (
     <Card className="bg-gray-800/40 border-gray-700 overflow-hidden hover:bg-gray-800/60 transition-all duration-300 group">
       {/* Media Section */}
       <div className="relative aspect-video bg-gray-900/50">
-        {ad.videoUrl ? (
+        {ad.video_url ? (
           <video 
             className="w-full h-full object-cover"
-            poster={ad.imageUrl}
+            poster={ad.image_url || '/placeholder.svg'}
             muted
             loop
             onMouseEnter={(e) => (e.target as HTMLVideoElement).play()}
             onMouseLeave={(e) => (e.target as HTMLVideoElement).pause()}
           >
-            <source src={ad.videoUrl} type="video/mp4" />
+            <source src={ad.video_url} type="video/mp4" />
           </video>
         ) : (
           <img 
-            src={ad.imageUrl || '/placeholder.svg'} 
+            src={ad.image_url || '/placeholder.svg'} 
             alt={ad.title}
             className="w-full h-full object-cover"
           />
@@ -70,7 +63,7 @@ export const AdCard = ({ ad }: AdCardProps) => {
           {ad.platform}
         </Badge>
         <Badge className="absolute top-3 right-3 bg-black/50 text-white border-0">
-          {ad.daysActive}d active
+          {ad.days_active}d active
         </Badge>
       </div>
 
@@ -81,19 +74,34 @@ export const AdCard = ({ ad }: AdCardProps) => {
             <h3 className="text-lg font-semibold text-white line-clamp-1 group-hover:text-blue-400 transition-colors">
               {ad.title}
             </h3>
-            <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white">
-              <ExternalLink className="w-4 h-4" />
-            </Button>
+            {ad.ad_url && (
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="text-gray-400 hover:text-white"
+                onClick={handleExternalClick}
+              >
+                <ExternalLink className="w-4 h-4" />
+              </Button>
+            )}
           </div>
           <p className="text-sm text-gray-400 line-clamp-2 mb-3">
             {ad.description}
           </p>
           <div className="flex items-center space-x-4 text-sm">
-            <span className="text-blue-400 font-medium">{ad.brand}</span>
-            <span className="text-gray-500">•</span>
-            <span className="text-gray-400">{ad.category}</span>
-            <span className="text-gray-500">•</span>
-            <span className="text-gray-400">{ad.country}</span>
+            {ad.brand && (
+              <>
+                <span className="text-blue-400 font-medium">{ad.brand}</span>
+                <span className="text-gray-500">•</span>
+              </>
+            )}
+            {ad.category && (
+              <>
+                <span className="text-gray-400">{ad.category}</span>
+                <span className="text-gray-500">•</span>
+              </>
+            )}
+            {ad.country && <span className="text-gray-400">{ad.country}</span>}
           </div>
         </div>
 
