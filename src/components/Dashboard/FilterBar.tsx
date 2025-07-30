@@ -3,11 +3,13 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar, Filter, Download } from 'lucide-react';
+import { Calendar, Filter, Download, Search } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useScrapeAds } from '@/hooks/useScrapeAds';
 
 export const FilterBar = () => {
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
+  const { mutate: scrapeAds, isPending: isScraping } = useScrapeAds();
 
   const handleFilterChange = (filter: string, value: string) => {
     if (value && !activeFilters.includes(`${filter}: ${value}`)) {
@@ -19,17 +21,62 @@ export const FilterBar = () => {
     setActiveFilters(activeFilters.filter(filter => filter !== filterToRemove));
   };
 
+  const handleScrapeAds = (days: number) => {
+    scrapeAds(days);
+  };
+
   return (
     <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700 rounded-lg p-6 space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <Filter className="w-5 h-5 text-blue-400" />
-          <h3 className="text-lg font-semibold text-white">Filters</h3>
+          <h3 className="text-lg font-semibold text-white">Ads Controls</h3>
         </div>
-        <Button variant="outline" size="sm" className="border-gray-600 text-gray-300 hover:bg-gray-700">
-          <Download className="w-4 h-4 mr-2" />
-          Export
-        </Button>
+        <div className="flex items-center space-x-2">
+          <Button variant="outline" size="sm" className="border-gray-600 text-gray-300 hover:bg-gray-700">
+            <Download className="w-4 h-4 mr-2" />
+            Export
+          </Button>
+        </div>
+      </div>
+
+      {/* Scrape Ads Section */}
+      <div className="bg-gray-700/20 rounded-lg p-4 space-y-3">
+        <div className="flex items-center space-x-2">
+          <Search className="w-4 h-4 text-blue-400" />
+          <h4 className="text-sm font-medium text-white">Scrape Indian Facebook Ads</h4>
+        </div>
+        <div className="flex items-center space-x-3">
+          <Button
+            onClick={() => handleScrapeAds(7)}
+            disabled={isScraping}
+            size="sm"
+            className="bg-blue-600 hover:bg-blue-700"
+          >
+            Last 7 Days
+          </Button>
+          <Button
+            onClick={() => handleScrapeAds(14)}
+            disabled={isScraping}
+            size="sm"
+            className="bg-blue-600 hover:bg-blue-700"
+          >
+            Last 14 Days
+          </Button>
+          <Button
+            onClick={() => handleScrapeAds(30)}
+            disabled={isScraping}
+            size="sm"
+            className="bg-blue-600 hover:bg-blue-700"
+          >
+            Last 30 Days
+          </Button>
+        </div>
+        {isScraping && (
+          <div className="text-sm text-blue-400 animate-pulse">
+            Scraping Facebook ads from India...
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -56,8 +103,8 @@ export const FilterBar = () => {
             </SelectTrigger>
             <SelectContent className="bg-gray-800 border-gray-700">
               <SelectItem value="facebook" className="text-gray-300">Facebook</SelectItem>
+              <SelectItem value="instagram" className="text-gray-300">Instagram</SelectItem>
               <SelectItem value="tiktok" className="text-gray-300">TikTok</SelectItem>
-              <SelectItem value="pinterest" className="text-gray-300">Pinterest</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -69,10 +116,9 @@ export const FilterBar = () => {
               <SelectValue placeholder="All countries" />
             </SelectTrigger>
             <SelectContent className="bg-gray-800 border-gray-700">
+              <SelectItem value="in" className="text-gray-300">India</SelectItem>
               <SelectItem value="us" className="text-gray-300">United States</SelectItem>
               <SelectItem value="uk" className="text-gray-300">United Kingdom</SelectItem>
-              <SelectItem value="ca" className="text-gray-300">Canada</SelectItem>
-              <SelectItem value="au" className="text-gray-300">Australia</SelectItem>
             </SelectContent>
           </Select>
         </div>

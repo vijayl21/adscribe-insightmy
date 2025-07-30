@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Header } from '@/components/Dashboard/Header';
 import { StatsOverview } from '@/components/Dashboard/StatsOverview';
@@ -8,6 +7,7 @@ import { AdCard } from '@/components/Dashboard/AdCard';
 import { useAds } from '@/hooks/useAds';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, BarChart3 } from 'lucide-react';
+import { AdsInsights } from '@/components/Dashboard/AdsInsights';
 
 interface DashboardPageProps {
   onLogout: () => void;
@@ -72,19 +72,34 @@ export const DashboardPage = ({ onLogout }: DashboardPageProps) => {
         ) : (
           <div className="space-y-6">
             <FilterBar />
+            
+            {/* AI Insights Section */}
+            <AdsInsights ads={ads || []} />
+            
             {adsLoading ? (
               <div className="flex items-center justify-center py-12">
                 <div className="text-white text-lg">Loading ads...</div>
               </div>
             ) : ads && ads.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {ads.map((ad) => (
-                  <AdCard key={ad.id} ad={ad} />
-                ))}
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-semibold text-white">
+                    Scraped Ads ({ads.length})
+                  </h3>
+                  <div className="text-sm text-gray-400">
+                    Showing ads from India
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {ads.map((ad) => (
+                    <AdCard key={ad.id} ad={ad} />
+                  ))}
+                </div>
               </div>
             ) : (
               <div className="text-center py-12">
                 <p className="text-gray-400 mb-4">No ads found</p>
+                <p className="text-gray-500 text-sm mb-4">Use the buttons above to scrape Facebook ads from India</p>
                 <Button onClick={handleRefresh} disabled={isRefreshing}>
                   <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
                   Refresh Data
